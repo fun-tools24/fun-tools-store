@@ -1,4 +1,2 @@
-export { default as createStore } from "./createStore";
-export { default as createStoreProvider } from "./createStoreProvider";
-
-export * from "./createStore/types";
+export { default as createStore } from "./react/createStore";
+export { default as createStoreProvider } from "./react/createStoreProvider";

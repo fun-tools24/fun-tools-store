@@ -1,19 +1,15 @@
 import React, { createContext, ReactNode, useContext, useRef } from "react";
-import createStore from "../createStore";
-import { AsyncHandler, CreateStoreContextProps, CreateStoreReturn, HandlerRecord, States, SyncHandler } from "../createStore/types";
+import { ConfigStoreProps, UseHandlers } from "../core/types";
+import createStore, { CreateStore } from "./createStore";
 
 
 
-export default function createStoreProvider<
-    S extends States,
-    SH extends Record<string, SyncHandler<S>> = Record<string, SyncHandler<S>>,
-    AH extends Record<string, AsyncHandler<S>> = Record<string, AsyncHandler<S>>
->(props: CreateStoreContextProps<S, SH, AH>) {    
+export default function createStoreProvider<S extends Record<string, any>>(props: ConfigStoreProps<S>) {    
 
-    const Context = createContext<CreateStoreReturn<S, SH, AH> | null>(null);
+    const Context = createContext<CreateStore<S> | null>(null);
     
     function Provider({children}: {children: ReactNode}): React.JSX.Element {
-        const store = useRef<CreateStoreReturn<S, SH, AH> | null>(null);
+        const store = useRef<CreateStore<S> | null>(null);
 
         if(!store.current) {
             store.current = createStore(props);
@@ -34,7 +30,7 @@ export default function createStoreProvider<
     }
 
 
-    function useHandlers(): HandlerRecord<S, SH, AH> {
+    function useHandlers(): UseHandlers<S> {
         const store = useContext(Context);
         if(!store) throw Error('Store Provider is missing !!');
         return store.useHandlers();
@@ -47,3 +43,6 @@ export default function createStoreProvider<
         useHandlers
     } 
 }
+
+
+export type CreateStoreProvider<S extends Record<string, any>> = ReturnType<typeof createStoreProvider<S>>
