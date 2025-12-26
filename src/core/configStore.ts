@@ -1,29 +1,27 @@
-import { useSyncExternalStore } from "react";
 import cookAutoBuildHandlers from "./cookAutoBuildHandlers";
 import mapObject from "../Utils/mapObject";
 import shallowEqual from "../Utils/shallowEqual";
 import { 
-    AsyncHandler, AsyncHandlerRecord, 
-    SyncHandler, SyncHandlerRecord,
-    ConfigStoreProps, States, 
+    ConfigStoreProps, GAH, GSH, States,
+    UseHandlers, 
 } from "./types";
 
 
 
 export default function configStore<
-    S extends States,
-    SH extends Record<string, SyncHandler<S>> = Record<string, SyncHandler<S>>,
-    AH extends Record<string, AsyncHandler<S>> = Record<string, AsyncHandler<S>>
+    S extends States, 
+    SH extends GSH<S> = GSH<S>,
+    AH extends GAH<S> = GAH<S>
 >({
     states, syncHandlers, asyncHandlers
 }: ConfigStoreProps<S, SH, AH>) {
 
     
     const handlers = Object.freeze({
-        ...mapObject(syncHandlers ?? {}, (val?: any) => {val(); notify()}) as SyncHandlerRecord<S, SH>,
-        ...mapObject(asyncHandlers ?? {}, (val?: any) => {val(); notify()}) as AsyncHandlerRecord<S, AH>,
+        ...mapObject(syncHandlers ?? {}, (handler: any) => (...args: any[]) => { handler(states, ...args); notify(); }),
+        ...mapObject(asyncHandlers ?? {}, (handler: any) => async (...args: any[]) => { await handler(states, ...args); notify(); }),
         ...cookAutoBuildHandlers(states, notify),
-    })
+    }) as UseHandlers<S, SH, AH>;
 
 
     const consumers = new Set<() => void>();
@@ -35,16 +33,15 @@ export default function configStore<
     }
 
 
-    function notify<A>(a?: A): A {
+    function notify() {
         consumers.forEach(con => con());
-        return a as A;
     }
 
 
-    const snapshotCache = new WeakMap<(state: S) => object, object>();
+    const snapshotCache = new WeakMap<(state: S) => any, any>();
 
 
-    function getSnapshot<T extends object>(selector: (state: S) => T): T {
+    function getSnapshot<T>(selector: (state: S) => T): T {
         const newSnapshot = selector(states);
         const cachedSnapshot = snapshotCache.get(selector);
 

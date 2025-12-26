@@ -3,12 +3,17 @@ import arrayHandlers from "./Handlers/array.handlers";
 import boolHandlers from "./Handlers/bool.handlers";
 import objectHandlers from "./Handlers/object.handler";
 
-function cookAutoBuildHandlers<S extends Record<string, any>>(states: S, notify: <A>(a?: A) => A) {
+function cookAutoBuildHandlers<S extends Record<string, any>>(states: S, notify: () => void) {
 
     const defaultStates: S = JSON.parse(JSON.stringify(states));
     
     return Object.fromEntries(
         Object.entries(states).map(([key, val]: [keyof S, S[keyof S]]) => {
+            const setValue = (newVal: S[keyof S]) => {
+                states[key] = newVal;
+                notify();
+            }
+
             const handlers = {
                 set: (action: Action<typeof val>) => {
                     states[key] = runAction(action, val);
@@ -21,9 +26,9 @@ function cookAutoBuildHandlers<S extends Record<string, any>>(states: S, notify:
                 },
                 
                 ...(
-                    Array.isArray(val) ? arrayHandlers(val, notify)
-                    : typeof val === "object" ? objectHandlers(val, notify)
-                    : typeof val === 'boolean' ? boolHandlers(val, notify)
+                     Array.isArray(val) ? arrayHandlers(states[key], setValue)
+                    : typeof val === "object" ? objectHandlers(states[key], setValue)
+                    : typeof val === 'boolean' ? boolHandlers(states[key], setValue)
                     : {}
                 )
             }

@@ -1,16 +1,19 @@
-function boolHandlers(state: boolean, notify: <A>(a?: A) => A) {
+
+
+export type BoolHandlers<S> = S extends boolean ? {
+    toggle: () => boolean;
+} : {};
+
+export default function boolHandlers<S extends boolean>(state: S, setState: (value: S) => void): BoolHandlers<S> {
+
+    if(typeof state !== 'boolean') return {} as BoolHandlers<S>;
+
     return {
         toggle: () => {
-            state = !state;
-            return notify(state);
+            state = !state as S;
+            setState(state);
+
+            return state;
         }
     }
-}
-
-
-type BoolHandlers = ReturnType<typeof boolHandlers>
-
-export {
-    boolHandlers as default,
-    BoolHandlers
 }

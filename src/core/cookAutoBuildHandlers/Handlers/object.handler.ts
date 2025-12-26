@@ -1,13 +1,24 @@
 import { OBJECT_KEYS, OBJECT_VALUE, SUB_OBJECT } from "../../../Types/object.type";
+import runAction, { Action } from "../../../Utils/runAction";
 
 
-function objectHandlers<S extends object>(state: S, notify: <A>(a?: A) => A) {
+export type ObjectHandlers<S> = S extends object ? {
+    update: <K extends OBJECT_KEYS<S>>(_path: K, val: Action<OBJECT_VALUE<S, K>>) => S;
+    updateMany: (val: SUB_OBJECT<S>) => S;
+} : {};
+
+export default function objectHandlers<S extends object>(state: S, setState: (value: S) => void): ObjectHandlers<S> {
+
+    if(typeof state !== 'object') return {} as ObjectHandlers<S>;
+
     return {
-        update: (_path: OBJECT_KEYS<S>, val: OBJECT_VALUE<S, OBJECT_KEYS<S>>) => {
+        update: <K extends OBJECT_KEYS<S>>(_path: K, val: Action<OBJECT_VALUE<S, K>>): S => {
             const path = _path.toString().split('.');
 
-            const fn = (obj: any, index = 0): S | typeof val => {
-                if (path.length === index) return val;
+            const fn = (obj: any, index = 0): S | OBJECT_VALUE<S, K> => {
+                if (path.length === index) {
+                    return runAction(val, obj);
+                }
                 const key = path[index];
 
                 return {
@@ -16,12 +27,13 @@ function objectHandlers<S extends object>(state: S, notify: <A>(a?: A) => A) {
                 };
             }
 
-            state = fn(state) as S;
+            const newState = fn(state) as S;
+            setState(newState);
 
-            return notify(state)
+            return newState
         },
 
-        updateMany: (val: SUB_OBJECT<S>) => {
+        updateMany: (val: SUB_OBJECT<S>): S => {
             const fn = (target: any, source: any) => {
                 if (typeof source !== "object" || source === null) return source;
                 if (Array.isArray(source)) return source;
@@ -37,19 +49,10 @@ function objectHandlers<S extends object>(state: S, notify: <A>(a?: A) => A) {
                 return result;
             }
 
-            state = fn(state, val) as S;
+            const newState = fn(state, val) as S;
+            setState(newState);
 
-            return notify(state)
+            return newState;
         }
-    }
-}
-
-
-type ObjectHandlers<S extends object> = ReturnType<typeof objectHandlers<S>>
-
-
-
-export {
-    ObjectHandlers,
-    objectHandlers as default
+    } as ObjectHandlers<S>
 }
