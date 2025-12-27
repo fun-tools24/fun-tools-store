@@ -7,12 +7,14 @@ export type ObjectHandlers<S> = S extends object ? {
     updateMany: (val: SUB_OBJECT<S>) => S;
 } : {};
 
-export default function objectHandlers<S extends object>(state: S, setState: (value: S) => void): ObjectHandlers<S> {
+export default function objectHandlers<S extends object>(getState: () => S, setState: (value: S) => void): ObjectHandlers<S> {
 
-    if(typeof state !== 'object') return {} as ObjectHandlers<S>;
+    if(typeof getState() !== 'object') return {} as ObjectHandlers<S>;
 
     return {
         update: <K extends OBJECT_KEYS<S>>(_path: K, val: Action<OBJECT_VALUE<S, K>>): S => {
+            const state = getState();
+
             const path = _path.toString().split('.');
 
             const fn = (obj: any, index = 0): S | OBJECT_VALUE<S, K> => {
@@ -34,6 +36,8 @@ export default function objectHandlers<S extends object>(state: S, setState: (va
         },
 
         updateMany: (val: SUB_OBJECT<S>): S => {
+            const state = getState();
+            
             const fn = (target: any, source: any) => {
                 if (typeof source !== "object" || source === null) return source;
                 if (Array.isArray(source)) return source;

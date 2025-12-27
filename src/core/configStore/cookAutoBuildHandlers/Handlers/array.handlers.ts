@@ -12,33 +12,37 @@ export type ArrayHandlers<S extends Array<any>, V = S extends Array<infer T> ? T
 
 
 export default function arrayHandlers<S extends Array<any>, V = S extends Array<infer T> ? T : never>(
-    state: S, setState: (value: S) => void
+    getState: () => S, setState: (value: S) => void
 ): ArrayHandlers<S, V> {
 
-    if(!Array.isArray(state)) return {} as ArrayHandlers<S, V>;
+    if(!Array.isArray(getState())) return {} as ArrayHandlers<S, V>;
 
     return {
         push: (val: V) => {
-            setState([...state, val] as S);
+            setState([...getState(), val] as S);
             return val;
         },
 
         pop: () => {
-            setState(state.slice(0, -1) as S);
+            const state = getState();
+            setState([...state.slice(0, -1)] as S);
             return state[state.length - 1];
         },
 
         shift: () => {
-            setState(state.slice(1) as S);
+            const state = getState();
+            setState([...state.slice(1)] as S);
             return state[0];
         },
 
         unShift: (val: V) => {
+            const state = getState();
             setState([val, ...state] as S);
             return val;
         },
 
         update: (index: number, val: Action<V>) => {
+            const state = getState();
             const newState = [...state];
             newState[index] = runAction(val, state[index]);
             setState(newState as S);
@@ -46,9 +50,10 @@ export default function arrayHandlers<S extends Array<any>, V = S extends Array<
         },
 
         remove: (index: number) => {
+            const state = getState();
             const removed = state[index];
             const newState = state.filter((_, i) => i !== index);
-            setState(newState as S);
+            setState([...newState] as S);
             return removed;
         }
     }

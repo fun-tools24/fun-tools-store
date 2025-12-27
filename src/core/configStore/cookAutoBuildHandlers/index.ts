@@ -9,27 +9,27 @@ function cookAutoBuildHandlers<S extends Record<string, any>>(states: S, notify:
     
     return Object.fromEntries(
         Object.entries(states).map(([key, val]: [keyof S, S[keyof S]]) => {
-            const setValue = (newVal: S[keyof S]) => {
-                states[key] = newVal;
+
+            const getState = () => states[key];
+
+            const setState = (newStates: S[keyof S]) => {
+                states[key] = newStates;
                 notify();
             }
 
             const handlers = {
                 set: (action: Action<typeof val>) => {
-                    console.log(action, states[key])
-                    states[key] = runAction(action, states[key]);
-                    notify();
+                    setState(runAction(action, getState()));
                 },
 
                 reset: () => {
-                    states[key] = defaultStates[key];
-                    notify();
+                    setState(defaultStates[key]);
                 },
                 
                 ...(
-                     Array.isArray(val) ? arrayHandlers(states[key], setValue)
-                    : typeof val === "object" ? objectHandlers(states[key], setValue)
-                    : typeof val === 'boolean' ? boolHandlers(states[key], setValue)
+                     Array.isArray(val) ? arrayHandlers(getState, setState)
+                    : typeof val === "object" ? objectHandlers(getState, setState)
+                    : typeof val === 'boolean' ? boolHandlers(getState, setState)
                     : {}
                 )
             }
