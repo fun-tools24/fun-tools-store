@@ -1,174 +1,229 @@
-# @ex/store
+# @fun-tools/store
 
-> A lightweight, type-safe external store library for React, React Native, and Next.js
+> A simple and lightweight state management library for React apps
 
-[![npm version](https://img.shields.io/npm/v/@ex/store.svg)](https://www.npmjs.com/package/@ex/store)
+[![npm version](https://img.shields.io/npm/v/@fun-tools/store.svg)](https://www.npmjs.com/package/@fun-tools/store)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## 📋 Overview
+## 📋 What is @fun-tools/store?
 
-`@ex/store` is a minimal yet powerful state management solution built on React's `useSyncExternalStore` API. It provides automatic handler generation, TypeScript support, and works seamlessly across React, React Native, and Next.js applications.
+`@fun-tools/store` is an easy-to-use state management library for React. Think of it as a smarter way to share data between your components without the complexity of Redux or other heavy tools.
 
-## ✨ Features
+**Perfect for beginners and experienced developers alike!**
 
-- **🎯 Type-Safe**: Full TypeScript support with intelligent type inference
-- **⚡ Lightweight**: Minimal bundle size with zero dependencies (except React peer dependency)
-- **🔄 Auto-Generated Handlers**: Automatic CRUD operations for arrays, objects, and primitives
-- **🪝 Custom Handlers**: Define your own sync and async state handlers
-- **🎨 Flexible API**: Use as a global store or scoped with React Context
-- **📦 Tree-Shakeable**: Only bundle what you use
-- **🚀 Performance Optimized**: Built-in shallow equality checks and snapshot caching
+## ✨ Why Choose @fun-tools/store?
+
+- ✅ **Super Easy to Learn** - Get started in minutes, not hours
+- ✅ **Automatic Features** - Get built-in functions for free (no need to write repetitive code)
+- ✅ **TypeScript Friendly** - Get helpful suggestions as you type
+- ✅ **Very Small** - Won't bloat your app size
+- ✅ **Fast Performance** - Components only update when they need to
+- ✅ **Works Everywhere** - React, React Native, and Next.js
 
 ## 📦 Installation
 
-```bash
-npm install @ex/store
-```
+Choose your favorite package manager:
 
 ```bash
-yarn add @ex/store
+npm install @fun-tools/store
 ```
 
-```bash
-pnpm add @ex/store
-```
+## 🚀 Quick Start - Your First Store
 
-## 🚀 Quick Start
+Let's create a simple counter in 3 easy steps:
 
-### Basic Usage (Global Store)
+### Step 1: Create Your Store
 
 ```tsx
-import { createStore } from "@ex/store";
+import { createStore } from "@fun-tools/store";
 
-// Define your store
-const store = createStore({
+// Create a store with initial values
+const counterStore = createStore({
   states: {
-    count: 0,
-    user: { name: "John", age: 25 },
-    items: ["apple", "banana"],
+    count: 0, // Our counter starts at 0
   },
 });
+```
 
-// Use in components
+### Step 2: Use It in a Component
+
+```tsx
 function Counter() {
-  const { count } = store.useStore((state) => ({ count: state.count }));
-  const handlers = store.useHandlers();
+  // Get the count value
+  const count = counterStore.useStore((state) => state.count);
+
+  // Get the handlers (functions to change the state)
+  const handlers = counterStore.useHandlers();
 
   return (
     <div>
-      <p>Count: {count}</p>
+      <h1>Count: {count}</h1>
+      {/* Set count to a specific number */}
+      <button onClick={() => handlers.count.set(10)}>Set to 10</button>
+      {/* Increment using current value */}
       <button onClick={() => handlers.count.set((prev) => prev + 1)}>
-        Increment
+        Add 1
       </button>
+      {/* Reset to initial value (0) */}
       <button onClick={() => handlers.count.reset()}>Reset</button>
     </div>
   );
 }
 ```
 
-### Context-Based Store (Scoped)
+That's it! You have a working counter. 🎉
+
+## 📖 Core Concepts
+
+### 1. Creating a Store
+
+A store is where you keep your app's data. It's like a box that holds all your values.
 
 ```tsx
-import { createStoreProvider } from "@ex/store";
-
-// Create provider
-const { Provider, useStore, useHandlers } = createStoreProvider({
+const myStore = createStore({
   states: {
-    theme: "light",
-    settings: { notifications: true },
+    // Put all your data here
+    userName: "John",
+    age: 25,
+    isLoggedIn: false,
   },
 });
+```
 
-// Wrap your app
-function App() {
+### 2. Reading Data from the Store
+
+Use `useStore` to read data in your components:
+
+```tsx
+function MyComponent() {
+  // Method 1: Get one value
+  const userName = myStore.useStore((state) => state.userName);
+
+  // Method 2: Get multiple values
+  const { userName, age } = myStore.useStore((state) => ({
+    userName: state.userName,
+    age: state.age,
+  }));
+
   return (
-    <Provider>
-      <ThemeToggle />
-    </Provider>
-  );
-}
-
-// Use in child components
-function ThemeToggle() {
-  const { theme } = useStore((state) => ({ theme: state.theme }));
-  const handlers = useHandlers();
-
-  return (
-    <button
-      onClick={() => handlers.theme.set(theme === "light" ? "dark" : "light")}
-    >
-      Current: {theme}
-    </button>
+    <div>
+      Hello, {userName}! You are {age} years old.
+    </div>
   );
 }
 ```
 
-## 📖 API Reference
+### 3. Changing Data (Using Handlers)
 
-### `createStore(config)`
+Handlers are functions that change your data. The library creates them automatically!
 
-Creates a global store instance.
+```tsx
+function MyComponent() {
+  const handlers = myStore.useHandlers();
 
-**Parameters:**
+  // Change the userName
+  handlers.userName.set("Jane");
 
-- `states`: Initial state object
-- `syncHandlers?`: Custom synchronous handlers (optional)
-- `asyncHandlers?`: Custom asynchronous handlers (optional)
-
-**Returns:**
-
-- `useStore<T>(selector)`: Hook to select and subscribe to state
-- `useHandlers()`: Hook to access all handlers
-
-### `createStoreProvider(config)`
-
-Creates a context-based store provider.
-
-**Parameters:**
-
-- Same as `createStore`
-
-**Returns:**
-
-- `Provider`: React component to wrap your app
-- `useStore<T>(selector)`: Hook to select and subscribe to state
-- `useHandlers()`: Hook to access all handlers
+  // Reset to initial value
+  handlers.userName.reset();
+}
+```
 
 ## 🎨 Auto-Generated Handlers
 
-The library automatically generates handlers based on your state types:
+The best part? You get **FREE handlers** based on your data type!
 
-### For All Types
-
-```tsx
-// Set value (supports callbacks)
-handlers.count.set(10);
-handlers.count.set((prev) => prev + 1);
-
-// Reset to initial value
-handlers.count.reset();
-```
-
-### For Arrays
+### For Simple Values (String, Number)
 
 ```tsx
 const store = createStore({
-  states: { items: ["a", "b", "c"] },
+  states: {
+    name: "John",
+    age: 25,
+  },
 });
 
 const handlers = store.useHandlers();
 
-// Add items
-handlers.items.push("d");
-handlers.items.unshift("z");
+// ✅ Set to a new value
+handlers.name.set("Jane");
+handlers.age.set(26);
 
-// Remove items
-handlers.items.pop();
-handlers.items.shift();
+// ✅ Set using current value
+handlers.age.set((currentAge) => currentAge + 1);
 
-// Transform
-handlers.items.filter((item) => item !== "b");
-handlers.items.map((item) => item.toUpperCase());
+// ✅ Reset to initial value
+handlers.name.reset(); // Back to "John"
+handlers.age.reset(); // Back to 25
+```
+
+### For Boolean (True/False)
+
+```tsx
+const store = createStore({
+  states: {
+    isOpen: false,
+    isDarkMode: true,
+  },
+});
+
+const handlers = store.useHandlers();
+
+// ✅ Toggle (switch between true/false)
+handlers.isOpen.toggle();
+
+// ✅ Set to specific value
+handlers.isDarkMode.set(false);
+
+// ✅ Reset to initial value
+handlers.isOpen.reset();
+```
+
+### For Arrays (Lists)
+
+```tsx
+const store = createStore({
+  states: {
+    fruits: ["apple", "banana"],
+    numbers: [1, 2, 3],
+  },
+});
+
+const handlers = store.useHandlers();
+
+// ✅ Add to end
+handlers.fruits.push("orange");
+// Result: ["apple", "banana", "orange"]
+
+// ✅ Add to beginning
+handlers.fruits.unShift("mango");
+// Result: ["mango", "apple", "banana", "orange"]
+
+// ✅ Remove from end
+handlers.fruits.pop();
+// Result: ["mango", "apple", "banana"]
+
+// ✅ Remove from beginning
+handlers.fruits.shift();
+// Result: ["apple", "banana"]
+
+// ✅ Update item at specific position
+handlers.fruits.update(0, "grape");
+// Result: ["grape", "banana"]
+
+// ✅ Update item using current value
+handlers.numbers.update(1, (current) => current * 2);
+
+// ✅ Remove item at specific position
+handlers.fruits.remove(1);
+// Result: ["grape"]
+
+// ✅ Set entire array
+handlers.fruits.set(["kiwi", "melon"]);
+
+// ✅ Reset to initial value
+handlers.fruits.reset();
+// Result: ["apple", "banana"]
 ```
 
 ### For Objects
@@ -178,210 +233,284 @@ const store = createStore({
   states: {
     user: {
       name: "John",
-      address: { city: "NYC", zip: "10001" },
+      email: "john@example.com",
+      settings: {
+        theme: "light",
+        notifications: true,
+      },
     },
   },
 });
 
 const handlers = store.useHandlers();
 
-// Update single nested property
+// ✅ Update single property
 handlers.user.update("name", "Jane");
-handlers.user.update("address.city", "LA");
 
-// Update multiple properties (deep merge)
+// ✅ Update with current value
+handlers.user.update("name", (currentName) => currentName.toUpperCase());
+
+// ✅ Update nested property (use dot notation)
+handlers.user.update("settings.theme", "dark");
+
+// ✅ Update multiple properties at once
 handlers.user.updateMany({
   name: "Jane",
-  address: { city: "LA" },
+  email: "jane@example.com",
 });
+
+// ✅ Update nested properties
+handlers.user.updateMany({
+  settings: {
+    theme: "dark",
+  },
+});
+
+// ✅ Set entire object
+handlers.user.set({
+  name: "Bob",
+  email: "bob@example.com",
+  settings: { theme: "blue", notifications: false },
+});
+
+// ✅ Reset to initial value
+handlers.user.reset();
 ```
 
 ## 🔧 Custom Handlers
 
-### Sync Handlers
+Sometimes you need custom logic. Create your own handlers!
+
+### Sync Handlers (Instant Changes)
 
 ```tsx
 const store = createStore({
   states: {
     count: 0,
+    firstName: "John",
+    lastName: "Doe",
   },
+
+  // Define your custom handlers here
   syncHandlers: {
-    increment: (states) => {
-      states.count++;
+    // Handler with no parameters
+    increment: (state) => {
+      state.count = state.count + 1;
     },
-    incrementBy: (states, amount: number) => {
-      states.count += amount;
+
+    // Handler with parameters
+    incrementBy: (state, amount: number) => {
+      state.count = state.count + amount;
+    },
+
+    // Handler that changes multiple values
+    setFullName: (state, first: string, last: string) => {
+      state.firstName = first;
+      state.lastName = last;
     },
   },
 });
 
-// Usage
-const handlers = store.useHandlers();
-handlers.increment(); // count + 1
-handlers.incrementBy(5); // count + 5
+// Use them in components
+function MyComponent() {
+  const handlers = store.useHandlers();
+
+  return (
+    <div>
+      <button onClick={() => handlers.increment()}>Add 1</button>
+      <button onClick={() => handlers.incrementBy(5)}>Add 5</button>
+      <button onClick={() => handlers.setFullName("Jane", "Smith")}>
+        Change Name
+      </button>
+    </div>
+  );
+}
 ```
 
-### Async Handlers
+### Async Handlers (For API Calls)
+
+Perfect for fetching data from servers!
 
 ```tsx
 const store = createStore({
   states: {
     user: null,
     loading: false,
+    error: null,
   },
+
   asyncHandlers: {
-    fetchUser: async (states, userId: string) => {
-      states.loading = true;
-      const response = await fetch(`/api/users/${userId}`);
-      states.user = await response.json();
-      states.loading = false;
+    // Fetch user from API
+    fetchUser: async (state, userId: string) => {
+      // Set loading to true
+      state.loading = true;
+      state.error = null;
+
+      try {
+        // Fetch from API
+        const response = await fetch(`https://api.example.com/users/${userId}`);
+        const data = await response.json();
+
+        // Update state with data
+        state.user = data;
+      } catch (err) {
+        // Handle errors
+        state.error = "Failed to fetch user";
+      } finally {
+        // Set loading to false
+        state.loading = false;
+      }
     },
   },
 });
 
-// Usage
-const handlers = store.useHandlers();
-await handlers.fetchUser("123");
-```
-
-## 💡 Advanced Usage
-
-### Selective Subscriptions
-
-The `useStore` selector ensures components only re-render when selected state changes:
-
-```tsx
-// Component only re-renders when 'count' changes
-function CountDisplay() {
-  const { count } = store.useStore((state) => ({ count: state.count }));
-  return <div>{count}</div>;
-}
-
-// Component only re-renders when 'user.name' changes
-function UserName() {
-  const { name } = store.useStore((state) => ({
-    name: state.user.name,
+// Use in component
+function UserProfile() {
+  const { user, loading } = store.useStore((state) => ({
+    user: state.user,
+    loading: state.loading,
   }));
-  return <div>{name}</div>;
+  const handlers = store.useHandlers();
+
+  return (
+    <div>
+      <button onClick={() => handlers.fetchUser("123")}>Load User</button>
+      {loading && <p>Loading...</p>}
+      {user && <p>Name: {user.name}</p>}
+    </div>
+  );
 }
 ```
 
-### Multiple Stores
+## 🎁 Using Providers (Scoped Stores)
 
-You can create multiple independent stores:
-
-```tsx
-const authStore = createStore({
-  states: { user: null, isAuthenticated: false },
-});
-
-const cartStore = createStore({
-  states: { items: [], total: 0 },
-});
-
-function App() {
-  const { user } = authStore.useStore((state) => ({ user: state.user }));
-  const { items } = cartStore.useStore((state) => ({ items: state.items }));
-
-  // ...
-}
-```
-
-### TypeScript Type Inference
-
-The library provides full type safety with intelligent inference:
+Sometimes you want a store that only works within a specific part of your app. Use `createStoreProvider`!
 
 ```tsx
-const store = createStore({
+import { createStoreProvider } from "@fun-tools/store";
+
+// Create a provider
+const { Provider, useStore, useHandlers } = createStoreProvider({
   states: {
-    count: 0,
-    user: { name: "John", age: 25 },
-  },
-  syncHandlers: {
-    setUserAge: (states, age: number) => {
-      states.user.age = age;
-    },
+    theme: "light",
+    language: "en",
   },
 });
 
-const handlers = store.useHandlers();
+// Wrap part of your app
+function App() {
+  return (
+    <Provider>
+      <Header />
+      <Content />
+    </Provider>
+  );
+}
 
-// ✅ TypeScript knows the types
-handlers.count.set(10); // ✓
-handlers.user.update("name", "Jane"); // ✓
-handlers.setUserAge(30); // ✓
+// Use in any child component
+function Header() {
+  const theme = useStore((state) => state.theme);
+  const handlers = useHandlers();
 
-// ❌ TypeScript catches errors
-handlers.count.set("invalid"); // Error: Argument of type 'string' is not assignable
-handlers.setUserAge("invalid"); // Error: Argument of type 'string' is not assignable
+  return (
+    <button
+      onClick={() => handlers.theme.set(theme === "light" ? "dark" : "light")}
+    >
+      Current theme: {theme}
+    </button>
+  );
+}
 ```
 
-## 🏗️ Architecture
+**The difference:**
 
-The library uses React's `useSyncExternalStore` API for optimal performance and compatibility:
+- `createStore` = Global (available everywhere)
+- `createStoreProvider` = Scoped (only available inside `<Provider>`)
 
-- **Snapshot Caching**: Prevents unnecessary re-renders with shallow equality checks
-- **WeakMap Storage**: Efficient snapshot management with automatic garbage collection
-- **Immutable Updates**: State changes create new references for proper React updates
-- **Subscription Management**: Automatic cleanup when components unmount
+## 💡 Performance Tips
 
-## 🎯 Use Cases
+### Only Re-render When Needed
 
-Perfect for:
+Components only re-render when the data they use changes:
 
-- ✅ Small to medium-sized applications
-- ✅ Quick prototyping and MVPs
-- ✅ React Native mobile apps
-- ✅ Next.js applications (SSR compatible)
-- ✅ Projects needing simple global state
-- ✅ Teams wanting minimal state management setup
+```tsx
+// ❌ BAD: Component re-renders on ANY state change
+const allState = store.useStore((state) => state);
 
-## 📝 Examples
+// ✅ GOOD: Component only re-renders when count changes
+const count = store.useStore((state) => state.count);
 
-### Todo App
+// ✅ GOOD: Component only re-renders when name or age change
+const { name, age } = store.useStore((state) => ({
+  name: state.name,
+  age: state.age,
+}));
+```
+
+## 📚 Real-World Examples
+
+### Example 1: Todo App
 
 ```tsx
 const todoStore = createStore({
   states: {
-    todos: [] as Array<{ id: string; text: string; completed: boolean }>,
+    todos: [] as Array<{ id: number; text: string; done: boolean }>,
   },
+
   syncHandlers: {
-    addTodo: (states, text: string) => {
-      states.todos.push({
-        id: Date.now().toString(),
-        text,
-        completed: false,
+    addTodo: (state, text: string) => {
+      state.todos.push({
+        id: Date.now(),
+        text: text,
+        done: false,
       });
     },
-    toggleTodo: (states, id: string) => {
-      const todo = states.todos.find((t) => t.id === id);
-      if (todo) todo.completed = !todo.completed;
+
+    toggleTodo: (state, id: number) => {
+      const todo = state.todos.find((t) => t.id === id);
+      if (todo) {
+        todo.done = !todo.done;
+      }
     },
-    removeTodo: (states, id: string) => {
-      states.todos = states.todos.filter((t) => t.id !== id);
+
+    deleteTodo: (state, id: number) => {
+      state.todos = state.todos.filter((t) => t.id !== id);
     },
   },
 });
 
-function TodoList() {
-  const { todos } = todoStore.useStore((state) => ({ todos: state.todos }));
+function TodoApp() {
+  const todos = todoStore.useStore((state) => state.todos);
   const handlers = todoStore.useHandlers();
+  const [input, setInput] = React.useState("");
 
   return (
     <div>
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Add a todo..."
+      />
+      <button
+        onClick={() => {
+          handlers.addTodo(input);
+          setInput("");
+        }}
+      >
+        Add
+      </button>
+
       {todos.map((todo) => (
         <div key={todo.id}>
           <input
             type="checkbox"
-            checked={todo.completed}
+            checked={todo.done}
             onChange={() => handlers.toggleTodo(todo.id)}
           />
-          <span
-            style={{ textDecoration: todo.completed ? "line-through" : "none" }}
-          >
+          <span style={{ textDecoration: todo.done ? "line-through" : "none" }}>
             {todo.text}
           </span>
-          <button onClick={() => handlers.removeTodo(todo.id)}>Delete</button>
+          <button onClick={() => handlers.deleteTodo(todo.id)}>Delete</button>
         </div>
       ))}
     </div>
@@ -389,49 +518,180 @@ function TodoList() {
 }
 ```
 
-### Form Management
+### Example 2: Shopping Cart
 
 ```tsx
-const formStore = createStore({
+const cartStore = createStore({
   states: {
-    formData: {
-      username: "",
-      email: "",
-      bio: "",
-    },
-    errors: {} as Record<string, string>,
+    items: [] as Array<{
+      id: number;
+      name: string;
+      price: number;
+      quantity: number;
+    }>,
+    total: 0,
   },
+
   syncHandlers: {
-    updateField: (
-      states,
-      { field, value }: { field: string; value: string }
-    ) => {
-      states.formData = { ...states.formData, [field]: value };
+    addItem: (state, product: { id: number; name: string; price: number }) => {
+      // Check if item already exists
+      const existing = state.items.find((item) => item.id === product.id);
+
+      if (existing) {
+        // Increase quantity
+        existing.quantity++;
+      } else {
+        // Add new item
+        state.items.push({ ...product, quantity: 1 });
+      }
+
+      // Update total
+      state.total = state.items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
     },
-    validate: (states) => {
-      const errors: Record<string, string> = {};
-      if (!states.formData.username) errors.username = "Required";
-      if (!states.formData.email.includes("@")) errors.email = "Invalid email";
-      states.errors = errors;
+
+    removeItem: (state, id: number) => {
+      state.items = state.items.filter((item) => item.id !== id);
+      state.total = state.items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+    },
+
+    clearCart: (state) => {
+      state.items = [];
+      state.total = 0;
     },
   },
 });
 ```
 
-## 🤝 Contributing
+### Example 3: User Authentication
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+```tsx
+const authStore = createStore({
+  states: {
+    user: null as { id: string; name: string; email: string } | null,
+    isAuthenticated: false,
+    isLoading: false,
+  },
 
-## 📄 License
+  asyncHandlers: {
+    login: async (state, email: string, password: string) => {
+      state.isLoading = true;
 
-MIT © [Your Name]
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        state.user = data.user;
+        state.isAuthenticated = true;
+      } catch (error) {
+        console.error("Login failed:", error);
+      } finally {
+        state.isLoading = false;
+      }
+    },
+
+    logout: async (state) => {
+      await fetch("/api/logout", { method: "POST" });
+      state.user = null;
+      state.isAuthenticated = false;
+    },
+  },
+});
+```
+
+## 🎓 TypeScript Support
+
+The library works great with TypeScript! You get autocomplete and type safety.
+
+### Defining State Types
+
+```tsx
+// Define your state shape
+type UserState = {
+  name: string;
+  age: number;
+  email: string;
+};
+
+const store = createStore({
+  states: {
+    count: 0,
+    user: {
+      name: "John",
+      age: 25,
+      email: "john@example.com",
+    } as UserState,
+  },
+
+  syncHandlers: {
+    // TypeScript knows the state type!
+    updateUser: (state, newUser: UserState) => {
+      state.user = newUser;
+    },
+  },
+});
+
+// TypeScript will catch errors
+const handlers = store.useHandlers();
+handlers.updateUser({
+  name: "Jane",
+  age: 26,
+  // ❌ Error: missing 'email' property
+});
+```
+
+## ❓ Common Questions
+
+### Q: When should I use a global store vs provider?
+
+**Use Global Store (`createStore`) when:**
+
+- Data is needed across your entire app (like user auth, theme)
+- You want simple setup without wrapping components
+
+**Use Provider (`createStoreProvider`) when:**
+
+- Data is only needed in a specific section
+- You want better component isolation
+- You're building reusable components
+
+### Q: How is this different from useState?
+
+`useState` is great for local component state. Use `@fun-tools/store` when:
+
+- Multiple components need the same data
+- You want to avoid prop drilling
+- You need more powerful update functions
+
+### Q: Can I use multiple stores?
+
+Yes! Create as many stores as you need:
+
+```tsx
+const userStore = createStore({ states: { user: null } });
+const cartStore = createStore({ states: { items: [] } });
+const themeStore = createStore({ states: { theme: "light" } });
+```
+
 
 ## 🔗 Links
 
 - [GitHub Repository](https://github.com/yourusername/ex-store)
-- [Issues](https://github.com/yourusername/ex-store/issues)
-- [NPM Package](https://www.npmjs.com/package/@ex/store)
+- [Report Issues](https://github.com/yourusername/ex-store/issues)
+- [NPM Package](https://www.npmjs.com/package/@fun-tools/store)
 
 ---
 
-Made with ❤️ by developers, for developers
+**Made with ❤️ for developers who value simplicity by @Mustak24**
+
+Happy coding! 🚀
