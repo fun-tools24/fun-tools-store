@@ -1,6 +1,6 @@
 import cookAutoBuildHandlers from "./cookAutoBuildHandlers";
-import mapObject from "../Utils/mapObject";
-import shallowEqual from "../Utils/shallowEqual";
+import mapObject from "@/utils/functions/mapObject";
+import shallowEqual from "@/utils/functions/shallowEqual";
 import { 
     ConfigStoreProps, GAH, GSH, States,
     UseHandlers, 

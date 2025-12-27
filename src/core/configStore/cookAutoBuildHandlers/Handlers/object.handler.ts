@@ -1,5 +1,5 @@
-import { OBJECT_KEYS, OBJECT_VALUE, SUB_OBJECT } from "../../../Types/object.type";
-import runAction, { Action } from "../../../Utils/runAction";
+import { OBJECT_KEYS, OBJECT_VALUE, SUB_OBJECT } from "@/utils/types/object.type";
+import runAction, { Action } from "@/utils/functions/runAction";
 
 
 export type ObjectHandlers<S> = S extends object ? {

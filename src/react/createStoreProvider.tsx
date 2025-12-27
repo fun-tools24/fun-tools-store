@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useRef } from "react";
-import { ConfigStoreProps, GSH, GAH, UseHandlers } from "../core/types";
+import { ConfigStoreProps, GSH, GAH, UseHandlers } from "../core/configStore/types";
 import createStore, { CreateStore } from "./createStore";
 
 
@@ -34,7 +34,7 @@ export default function createStoreProvider<
     }
 
 
-    function useHandlers(): UseHandlers<S> {
+    function useHandlers(): UseHandlers<S, SH, AH> {
         const store = useContext(Context);
         if(!store) throw Error('Store Provider is missing !!');
         return store.useHandlers();

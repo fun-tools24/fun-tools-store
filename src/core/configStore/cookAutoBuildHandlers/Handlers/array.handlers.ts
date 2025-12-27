@@ -1,4 +1,4 @@
-import runAction, { Action } from "../../../Utils/runAction";
+import runAction, { Action } from "@/utils/functions/runAction";
 
 
 export type ArrayHandlers<S extends Array<any>, V = S extends Array<infer T> ? T : never> = S extends Array<V> ? {

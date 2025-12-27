@@ -1,5 +1,5 @@
 {
-  "name": "@ex/store",
+  "name": "@fun-tools/store",
   "version": "0.1.0",
   "description": "Lightweight external store for React, React Native and Next.js",
   "license": "MIT",
@@ -12,6 +12,16 @@
 
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./react": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"

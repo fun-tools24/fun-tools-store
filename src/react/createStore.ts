@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import configStore from "../core/configStore";
-import { ConfigStoreProps, GSH, GAH, States } from "../core/types";
+import { ConfigStoreProps, GSH, GAH, States, UseHandlers } from "../core/configStore/types";
 
 export default function createStore<
     S extends States, 
@@ -17,7 +17,7 @@ export default function createStore<
         )
     }
 
-    const useHandlers = () => handlers;
+    const useHandlers = (): UseHandlers<S, SH, AH> => handlers;
 
     return {
         useStore,

@@ -1,4 +1,4 @@
-import runAction, { Action } from "../../Utils/runAction";
+import runAction, { Action } from "@/utils/functions/runAction";
 import arrayHandlers from "./Handlers/array.handlers";
 import boolHandlers from "./Handlers/bool.handlers";
 import objectHandlers from "./Handlers/object.handler";
@@ -16,7 +16,8 @@ function cookAutoBuildHandlers<S extends Record<string, any>>(states: S, notify:
 
             const handlers = {
                 set: (action: Action<typeof val>) => {
-                    states[key] = runAction(action, val);
+                    console.log(action, states[key])
+                    states[key] = runAction(action, states[key]);
                     notify();
                 },
 
