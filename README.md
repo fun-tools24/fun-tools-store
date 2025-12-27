@@ -683,15 +683,43 @@ const cartStore = createStore({ states: { items: [] } });
 const themeStore = createStore({ states: { theme: "light" } });
 ```
 
+## 🤝 Contributors
+
+This project is open source and welcomes contributions from the community! We appreciate all the developers who have helped make this library better.
+
+### How to Contribute
+
+We welcome contributions of all kinds:
+
+- 🐛 Bug fixes
+- ✨ New features
+- 📝 Documentation improvements
+- 💡 Suggestions and ideas
+
+To contribute:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Our Contributors
+
+Thanks to all the amazing people who have contributed to this project! 🎉
+
+<!-- Contributors list will be automatically updated -->
+
+Want to see your name here? [Start contributing today!](https://github.com/fun-tools24/fun-tools-store/contribute)
 
 ## 🔗 Links
 
-- [GitHub Repository](https://github.com/yourusername/ex-store)
-- [Report Issues](https://github.com/yourusername/ex-store/issues)
+- [GitHub Repository](https://github.com/fun-tools24/fun-tools-store)
+- [Report Issues](https://github.com/fun-tools24/fun-tools-store/issues)
 - [NPM Package](https://www.npmjs.com/package/@fun-tools/store)
 
 ---
 
-**Made with ❤️ for developers who value simplicity by @Mustak24**
+**Made with ❤️ for developers who value simplicity by @fun-tools24**
 
 Happy coding! 🚀
