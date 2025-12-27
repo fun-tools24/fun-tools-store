@@ -1,19 +1,19 @@
 import React, { createContext, ReactNode, useContext, useRef } from "react";
-import createStore from "../createStore";
-import { AsyncHandler, CreateStoreContextProps, CreateStoreReturn, HandlerRecord, States, SyncHandler } from "../createStore/types";
+import { ConfigStoreProps, GSH, GAH, UseHandlers } from "../core/configStore/types";
+import createStore, { CreateStore } from "./createStore";
 
 
 
 export default function createStoreProvider<
-    S extends States,
-    SH extends Record<string, SyncHandler<S>> = Record<string, SyncHandler<S>>,
-    AH extends Record<string, AsyncHandler<S>> = Record<string, AsyncHandler<S>>
->(props: CreateStoreContextProps<S, SH, AH>) {    
+    S extends Record<string, any>, 
+    SH extends GSH<S> = GSH<S>, 
+    AH extends GAH<S> = GAH<S>
+>(props: ConfigStoreProps<S, SH, AH>) {    
 
-    const Context = createContext<CreateStoreReturn<S, SH, AH> | null>(null);
+    const Context = createContext<CreateStore<S, SH, AH> | null>(null);
     
     function Provider({children}: {children: ReactNode}): React.JSX.Element {
-        const store = useRef<CreateStoreReturn<S, SH, AH> | null>(null);
+        const store = useRef<CreateStore<S, SH, AH> | null>(null);
 
         if(!store.current) {
             store.current = createStore(props);
@@ -27,14 +27,14 @@ export default function createStoreProvider<
     }
 
     
-    function useStore<T extends object>(selector: (states: S) => T): T {
+    function useStore<T>(selector: (states: S) => T): T {
         const store = useContext(Context);
         if(!store) throw Error('Store Provider is missing !!');
-        return store.useStore<T>(selector);
+        return store.useStore(selector);
     }
 
 
-    function useHandlers(): HandlerRecord<S, SH, AH> {
+    function useHandlers(): UseHandlers<S, SH, AH> {
         const store = useContext(Context);
         if(!store) throw Error('Store Provider is missing !!');
         return store.useHandlers();
@@ -47,3 +47,6 @@ export default function createStoreProvider<
         useHandlers
     } 
 }
+
+
+export type CreateStoreProvider<S extends Record<string, any>> = ReturnType<typeof createStoreProvider<S>>

@@ -28,4 +28,6 @@ export type OBJECT_FROM_KEYS<O extends Record<string, any> , K extends string[],
 )
 
 
-// let t: OBJECT_FROM_KEYS<{a: 1, b: {c: 2}, d: 3}, ['a', 'b', 'd', 'b.c:name']>
+export type SUB_OBJECT<O extends Record<string, any>> = {
+    [K in keyof O]?: O[K] extends Record<string, any> ? SUB_OBJECT<O[K]> : O[K]
+}
