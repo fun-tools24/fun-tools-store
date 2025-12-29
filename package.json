@@ -1,6 +1,6 @@
 {
   "name": "@fun-tools/store",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Lightweight external store for React, React Native and Next.js",
   "license": "MIT",
 
